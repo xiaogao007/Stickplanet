@@ -1,0 +1,11 @@
+{
+  "name": "syncTemplates",
+  "version": "1.0.0",
+  "description": "同步推荐计划模板云函数",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}
+
+

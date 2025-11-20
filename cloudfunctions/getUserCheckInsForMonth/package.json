@@ -1,0 +1,10 @@
+{
+  "name": "getUserCheckInsForMonth",
+  "version": "1.0.0",
+  "description": "获取用户月度打卡记录云函数",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}
+

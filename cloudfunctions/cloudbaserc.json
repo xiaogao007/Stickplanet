@@ -1,0 +1,74 @@
+{
+  "envId": "cloud1-9gu9ppxt5c82bbc1",
+  "version": "2.0",
+  "functionRoot": ".",
+  "functions": [
+    {
+      "name": "wechatLogin",
+      "timeout": 60,
+      "envVariables": {},
+      "runtime": "Nodejs16.13"
+    },
+    {
+      "name": "getProfile",
+      "timeout": 60,
+      "envVariables": {},
+      "runtime": "Nodejs16.13"
+    },
+    {
+      "name": "getUserPlans",
+      "timeout": 60,
+      "envVariables": {},
+      "runtime": "Nodejs16.13"
+    },
+    {
+      "name": "getTemplates",
+      "timeout": 60,
+      "envVariables": {},
+      "runtime": "Nodejs16.13"
+    },
+    {
+      "name": "getPlanById",
+      "timeout": 60,
+      "envVariables": {},
+      "runtime": "Nodejs16.13"
+    },
+    {
+      "name": "createPlan",
+      "timeout": 60,
+      "envVariables": {},
+      "runtime": "Nodejs16.13"
+    },
+    {
+      "name": "createCheckIn",
+      "timeout": 60,
+      "envVariables": {},
+      "runtime": "Nodejs16.13"
+    },
+    {
+      "name": "getCheckInsByPlan",
+      "timeout": 60,
+      "envVariables": {},
+      "runtime": "Nodejs16.13"
+    },
+    {
+      "name": "getUserCheckInsForMonth",
+      "timeout": 60,
+      "envVariables": {},
+      "runtime": "Nodejs16.13"
+    },
+    {
+      "name": "getUserAchievements",
+      "timeout": 60,
+      "envVariables": {},
+      "runtime": "Nodejs16.13"
+    },
+    {
+      "name": "syncTemplates",
+      "timeout": 60,
+      "envVariables": {},
+      "runtime": "Nodejs16.13"
+    }
+  ]
+}
+

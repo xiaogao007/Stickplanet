@@ -1,0 +1,7 @@
+# 云函数依赖
+node_modules/
+*.log
+
+# 云函数上传文件
+.upload/
+
