@@ -8,8 +8,6 @@ cloud.init({
 const db = cloud.database()
 const _ = db.command
 
-const TEMPLATE_ASSET_BASE = '/assets/images/temples'
-
 const HOT_TEMPLATE_DOCS = [
   {
     id: 'citywalk-28',
@@ -51,13 +49,17 @@ const HOT_TEMPLATE_DOCS = [
     motivation_text: '把刷短视频的时间换成精神富养，沉淀观点更自洽。',
     template_category: '自我成长'
   }
-].map(template => ({
-  ...template,
-  cover_image: `${TEMPLATE_ASSET_BASE}/${template.id}.png`
-}))
+]
 
-async function seedHotTemplates(plansCollection) {
-  const templateIds = HOT_TEMPLATE_DOCS.map(item => item.id)
+const getCoverImagePath = (envId, templateId) => `cloud://${envId}/temples/${templateId}.png`
+
+async function seedHotTemplates(plansCollection, envId) {
+  const templateDocs = HOT_TEMPLATE_DOCS.map((item) => ({
+    ...item,
+    cover_image: getCoverImagePath(envId, item.id)
+  }))
+
+  const templateIds = templateDocs.map(item => item.id)
   const existing = await plansCollection
     .where({
       _id: _.in(templateIds)
@@ -65,9 +67,10 @@ async function seedHotTemplates(plansCollection) {
     .get()
 
   const existingIdSet = new Set((existing.data || []).map(item => item._id))
+  const existingMap = new Map((existing.data || []).map(item => [item._id, item]))
   const now = new Date().toISOString()
 
-  const docsToInsert = HOT_TEMPLATE_DOCS.filter(item => !existingIdSet.has(item.id)).map(item => ({
+  const docsToInsert = templateDocs.filter(item => !existingIdSet.has(item.id)).map(item => ({
     _id: item.id,
     user_id: null,
     name: item.name,
@@ -88,23 +91,43 @@ async function seedHotTemplates(plansCollection) {
     updated_at: now
   }))
 
-  if (!docsToInsert.length) {
-    return
+  const docsNeedingCoverUpdate = templateDocs.filter((item) => {
+    const matched = existingMap.get(item.id)
+    return matched && matched.cover_image !== item.cover_image
+  })
+
+  if (docsNeedingCoverUpdate.length) {
+    for (const template of docsNeedingCoverUpdate) {
+      await plansCollection.doc(template.id).update({
+        data: {
+          cover_image: template.cover_image,
+          updated_at: now
+        }
+      })
+    }
   }
 
-  for (const doc of docsToInsert) {
-    const {_id, ...data} = doc
-    await plansCollection.doc(_id).set({
-      data
-    })
+  if (docsToInsert.length) {
+    for (const doc of docsToInsert) {
+      const {_id, ...data} = doc
+      await plansCollection.doc(_id).set({
+        data
+      })
+    }
   }
 }
 
 exports.main = async (event, context) => {
   try {
     const plansCollection = db.collection('plans')
+    const wxContext = cloud.getWXContext()
+    const envId = wxContext.ENV || process.env.TCB_ENV || process.env.SCF_NAMESPACE
 
-    await seedHotTemplates(plansCollection)
+    if (!envId) {
+      throw new Error('无法解析云环境 ID，无法生成模板封面路径')
+    }
+
+    await seedHotTemplates(plansCollection, envId)
 
     const result = await plansCollection
       .where({
