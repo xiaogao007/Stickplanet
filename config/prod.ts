@@ -1,7 +1,14 @@
 import type {UserConfigExport} from '@tarojs/cli'
 
 export default {
-  mini: {},
+  mini: {
+    // 生产环境优化配置
+    optimizeMainPackage: {
+      enable: true
+    },
+    // 关闭 source map 以减少体积
+    sourceMapType: 'none'
+  },
   h5: {
     /**
      * WebpackChain 插件配置

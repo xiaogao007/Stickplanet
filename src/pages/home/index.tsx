@@ -21,7 +21,7 @@ const getDayOfYear = (date: Date) => {
 }
 
 const Home: React.FC = () => {
-  const {user} = useAuth({guard: true})
+  const {user, loading: authLoading} = useAuth() // 移除 guard，允许未登录用户访问
   const [profile, setProfile] = useState<Profile | null>(null)
   const [activePlans, setActivePlans] = useState<PlanWithStats[]>([])
   const [loading, setLoading] = useState(true)
@@ -33,7 +33,7 @@ const Home: React.FC = () => {
       console.log('初始化用户信息:', user)
       setProfile({
         id: user.id,
-        nickname: user.nickname || '坚持喵用户',
+        nickname: user.nickname || '一刻习惯用户',
         avatar_url: user.avatar_url || null,
         phone: null,
         email: null,
@@ -47,7 +47,12 @@ const Home: React.FC = () => {
   }, [user, profile])
 
   const loadData = useCallback(async () => {
-    if (!user?.id || loadingRef.current) return // 防止重复加载
+    // 未登录时不需要加载数据，直接设置 loading 为 false
+    if (!user?.id) {
+      setLoading(false)
+      return
+    }
+    if (loadingRef.current) return // 防止重复加载
 
     loadingRef.current = true
     setLoading(true)
@@ -67,7 +72,7 @@ const Home: React.FC = () => {
         setProfile({
           ...profileData,
           // 如果数据库中的头像或昵称为空（包括空字符串），使用登录时保存的信息
-          nickname: dbNickname || user?.nickname || '坚持喵用户',
+          nickname: dbNickname || user?.nickname || '一刻习惯用户',
           avatar_url: dbAvatarUrl || user?.avatar_url || null
         })
       } else if (user) {
@@ -77,7 +82,7 @@ const Home: React.FC = () => {
           if (prev) return prev // 如果已有数据，不覆盖
           return {
             id: user.id,
-            nickname: user.nickname || '坚持喵用户',
+            nickname: user.nickname || '一刻习惯用户',
             avatar_url: user.avatar_url || null,
             phone: null,
             email: null,
@@ -99,7 +104,7 @@ const Home: React.FC = () => {
           if (prev) return prev // 如果已有数据，不覆盖
           return {
             id: user.id,
-            nickname: user.nickname || '坚持喵用户',
+            nickname: user.nickname || '一刻习惯用户',
             avatar_url: user.avatar_url || null,
             phone: null,
             email: null,
@@ -126,6 +131,13 @@ const Home: React.FC = () => {
     loadData()
   })
 
+  // 当 authLoading 完成时，如果未登录，设置 loading 为 false
+  useEffect(() => {
+    if (!authLoading && !user) {
+      setLoading(false)
+    }
+  }, [authLoading, user])
+
   // 获取要显示的头像和昵称（优先使用 profile，其次使用 user）
   // 确保空字符串也被视为无效值
   const getValidString = (value: string | null | undefined): string | null => {
@@ -135,7 +147,7 @@ const Home: React.FC = () => {
   }
   
   const displayAvatar = getValidString(profile?.avatar_url) || getValidString(user?.avatar_url) || null
-  const displayNickname = getValidString(profile?.nickname) || getValidString(user?.nickname) || '坚持喵用户'
+  const displayNickname = getValidString(profile?.nickname) || getValidString(user?.nickname) || '一刻习惯用户'
   
   // 调试日志（必须在 return 之前）
   useEffect(() => {
@@ -156,6 +168,21 @@ const Home: React.FC = () => {
   }, [])
 
   const handleCreatePlan = () => {
+    // 需要登录才能创建计划
+    if (!user) {
+      Taro.showModal({
+        title: '提示',
+        content: '创建计划需要登录，是否前往登录？',
+        confirmText: '去登录',
+        cancelText: '取消',
+        success: (res) => {
+          if (res.confirm) {
+            Taro.navigateTo({url: '/subpackages/auth/pages/login/index'})
+          }
+        }
+      })
+      return
+    }
     Taro.navigateTo({url: '/pages/plan-create/index'})
   }
 
@@ -164,14 +191,93 @@ const Home: React.FC = () => {
   }
 
   const handleViewPlanDetail = (planId: string) => {
+    // 需要登录才能查看计划详情
+    if (!user) {
+      Taro.showModal({
+        title: '提示',
+        content: '查看计划详情需要登录，是否前往登录？',
+        confirmText: '去登录',
+        cancelText: '取消',
+        success: (res) => {
+          if (res.confirm) {
+            Taro.navigateTo({url: '/subpackages/auth/pages/login/index'})
+          }
+        }
+      })
+      return
+    }
     Taro.navigateTo({url: `/pages/plan-detail/index?id=${planId}`})
   }
 
-  if (loading) {
+  // 显示加载状态（等待 auth 加载完成）
+  if (authLoading || loading) {
     return (
       <View className="min-h-screen bg-background flex items-center justify-center">
         <Text className="text-muted-foreground">加载中...</Text>
       </View>
+    )
+  }
+
+  // 未登录时显示欢迎界面
+  if (!user) {
+    return (
+      <ScrollView scrollY className="min-h-screen bg-background box-border">
+        <View className="p-4 space-y-4 md:space-y-6">
+          <View className="bg-card rounded-2xl p-6 shadow-sm text-center">
+            <View className="text-6xl mb-4">🎯</View>
+            <Text className="text-xl font-bold text-foreground block mb-2">欢迎来到一刻习惯</Text>
+            <Text className="text-sm text-muted-foreground block mb-6">开启你的坚持之旅，让习惯成为生活的一部分</Text>
+            <Button
+              className="bg-primary text-primary-foreground py-3 px-6 rounded-full break-keep text-base"
+              size="default"
+              onClick={() => Taro.navigateTo({url: '/subpackages/auth/pages/login/index'})}>
+              立即登录
+            </Button>
+          </View>
+
+          <View className="bg-card rounded-2xl p-6 shadow-sm">
+            <View className="flex items-center justify-between mb-4">
+              <Text className="text-lg font-bold text-foreground">推荐计划</Text>
+              <Text className="text-sm text-primary" onClick={handleViewTemplates}>
+                查看全部 →
+              </Text>
+            </View>
+            <View className="py-4 text-center">
+              <Text className="text-muted-foreground block mb-4">浏览精选计划模板，找到适合你的坚持计划</Text>
+              <Button
+                className="bg-primary text-primary-foreground py-3 px-6 rounded-full break-keep text-base"
+                size="default"
+                onClick={handleViewTemplates}>
+                查看推荐计划
+              </Button>
+            </View>
+          </View>
+
+          <View className="grid grid-cols-2 gap-4">
+            <View className="bg-card rounded-2xl p-6 shadow-sm text-center" onClick={handleViewTemplates}>
+              <View className="text-4xl mb-2">📋</View>
+              <Text className="text-base font-semibold text-foreground block">推荐计划</Text>
+              <Text className="text-xs text-muted-foreground block mt-1">发现热门模板</Text>
+            </View>
+            <View
+              className="bg-card rounded-2xl p-6 shadow-sm text-center"
+              onClick={() => Taro.switchTab({url: '/pages/calendar/index'})}>
+              <View className="text-4xl mb-2">📅</View>
+              <Text className="text-base font-semibold text-foreground block">打卡日历</Text>
+              <Text className="text-xs text-muted-foreground block mt-1">查看打卡记录</Text>
+            </View>
+          </View>
+
+          <View className="bg-card rounded-2xl p-6 shadow-sm">
+            <Text className="text-base font-bold text-foreground block mb-3">坚持信号</Text>
+            <View className="rounded-2xl p-5 relative overflow-hidden bg-gradient-to-br from-emerald-50 via-white to-primary/10 border border-primary/20">
+              <Text className="absolute top-3 left-4 text-5xl font-serif text-primary/30">"</Text>
+              <Text className="text-sm text-slate-800 leading-relaxed pl-8 pr-3">{inspirationText}</Text>
+              <Text className="text-xs text-emerald-600 block mt-4 text-right pr-1 tracking-wide">一刻习惯 · DAILY</Text>
+            </View>
+          </View>
+        </View>
+      </ScrollView>
     )
   }
 

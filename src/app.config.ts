@@ -1,5 +1,4 @@
 const pages = [
-  'pages/login/index',
   'pages/home/index',
   'pages/plans/index',
   'pages/calendar/index',
@@ -13,6 +12,21 @@ const pages = [
 
 export default defineAppConfig({
   pages,
+  // 分包配置
+  subPackages: [
+    {
+      root: 'subpackages/auth',
+      name: 'auth',
+      pages: ['pages/login/index']
+    }
+  ],
+  // 分包预下载配置（可选）
+  preloadRule: {
+    'pages/home/index': {
+      network: 'all',
+      packages: ['auth']
+    }
+  },
   tabBar: {
     color: '#999999',
     selectedColor: '#10B981',
@@ -48,7 +62,7 @@ export default defineAppConfig({
   window: {
     backgroundTextStyle: 'light',
     navigationBarBackgroundColor: '#10B981',
-    navigationBarTitleText: '坚持喵',
+    navigationBarTitleText: '一刻习惯',
     navigationBarTextStyle: 'white'
   }
 })

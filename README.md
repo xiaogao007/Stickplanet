@@ -4,7 +4,7 @@
 
 ## 项目概述
 
-坚持喵是一款基于 Taro + React + TypeScript 开发的微信小程序，使用 Tailwind CSS 进行样式设计，Supabase 作为后端数据库。
+一刻习惯是一款基于 Taro + React + TypeScript 开发的微信小程序，使用 Tailwind CSS 进行样式设计，Supabase 作为后端数据库。
 
 ### 核心功能
 
@@ -184,7 +184,7 @@ pnpm run build:h5
 TARO_APP_CLOUD_ENV=cloud1-9gu9ppxt5c82bbc1
 
 # 应用配置（可选）
-TARO_APP_NAME=坚持喵
+TARO_APP_NAME=一刻习惯
 TARO_APP_APP_ID=app-7nmudrc1tudd
 ```
 

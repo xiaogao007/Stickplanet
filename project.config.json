@@ -5,11 +5,11 @@
   "appid": "wx1ec548471af45342",
   "setting": {
     "urlCheck": true,
-    "es6": false,
-    "enhance": false,
+    "es6": true,
+    "enhance": true,
     "compileHotReLoad": false,
-    "postcss": false,
-    "minified": false,
+    "postcss": true,
+    "minified": true,
     "babelSetting": {
       "ignore": [],
       "disablePlugins": [],
@@ -21,7 +21,56 @@
   "srcMiniprogramRoot": "dist/",
   "cloudfunctionRoot": "cloudfunctions/",
   "packOptions": {
-    "ignore": [],
+    "ignore": [
+      {
+        "type": "file",
+        "value": "**/*.map"
+      },
+      {
+        "type": "file",
+        "value": "**/*.js.map"
+      },
+      {
+        "type": "file",
+        "value": "**/*.ts.map"
+      },
+      {
+        "type": "folder",
+        "value": "**/node_modules"
+      },
+      {
+        "type": "folder",
+        "value": "**/.git"
+      },
+      {
+        "type": "file",
+        "value": "**/.DS_Store"
+      },
+      {
+        "type": "file",
+        "value": "**/README.md"
+      },
+      {
+        "type": "file",
+        "value": "**/package.json"
+      },
+      {
+        "type": "file",
+        "value": "**/package-lock.json"
+      },
+      {
+        "type": "file",
+        "value": "**/tsconfig.json"
+      },
+      {
+        "type": "folder",
+        "value": "**/.vscode"
+      },
+      {
+        "type": "folder",
+        "value": "**/.idea"
+      }
+    ],
     "include": []
   },
   "condition": {},

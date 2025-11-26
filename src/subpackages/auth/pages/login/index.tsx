@@ -4,6 +4,7 @@ import type React from 'react'
 import {useState} from 'react'
 import {wechatLogin} from '@/utils/wechatAuth'
 import bgImg from '@/assets/images/bg.png'
+import './index.scss'
 
 const Login: React.FC = () => {
   const [loading, setLoading] = useState(false)

@@ -5,6 +5,7 @@ import type React from 'react'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import {planApi} from '@/db/cloudApi'
 import type {Plan} from '@/db/types'
+import {convertCloudPathsToTempURLs} from '@/utils/cloudUpload'
 
 const FALLBACK_TEMPLATES: Plan[] = []
 
@@ -20,7 +21,7 @@ const FALLBACK_TEMPLATE_SEED = FALLBACK_TEMPLATES.map(template => ({
 }))
 
 const Templates: React.FC = () => {
-  const {user} = useAuth({guard: true})
+  const {user} = useAuth() // 移除 guard，允许未登录用户浏览模板
   const [templates, setTemplates] = useState<Plan[]>([])
   const [loading, setLoading] = useState(true)
   const [usedFallback, setUsedFallback] = useState(false)
@@ -30,8 +31,24 @@ const Templates: React.FC = () => {
     setLoading(true)
     try {
       const data = await planApi.getTemplates()
+      console.log('📋 获取到的模板数据:', data)
+      
       if (Array.isArray(data) && data.length > 0) {
-        setTemplates(data)
+        // 将云存储路径转换为临时链接（微信小程序 Image 组件需要）
+        const coverImages = data.map((t) => t.cover_image)
+        console.log('🖼️ 原始封面图片路径:', coverImages)
+        
+        const tempURLs = await convertCloudPathsToTempURLs(coverImages)
+        console.log('🔗 转换后的临时链接:', tempURLs)
+        
+        // 更新模板数据，使用转换后的临时链接
+        const templatesWithTempURLs = data.map((template, index) => ({
+          ...template,
+          cover_image: tempURLs[index]
+        }))
+        
+        console.log('✅ 更新后的模板数据:', templatesWithTempURLs)
+        setTemplates(templatesWithTempURLs)
         setUsedFallback(false)
       } else {
         setTemplates(FALLBACK_TEMPLATES)
@@ -71,7 +88,17 @@ const Templates: React.FC = () => {
 
   const handleUseTemplate = async (template: Plan) => {
     if (!user?.id) {
-      Taro.showToast({title: '请先登录', icon: 'none'})
+      Taro.showModal({
+        title: '提示',
+        content: '使用模板需要登录，是否前往登录？',
+        confirmText: '去登录',
+        cancelText: '取消',
+        success: (res) => {
+          if (res.confirm) {
+            Taro.navigateTo({url: '/subpackages/auth/pages/login/index'})
+          }
+        }
+      })
       return
     }
 

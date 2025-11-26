@@ -38,7 +38,7 @@
 TARO_APP_CLOUD_ENV=cloud1-9gu9ppxt5c82bbc1
 
 # 其他配置（可选）
-TARO_APP_NAME=坚持喵
+TARO_APP_NAME=一刻习惯
 TARO_APP_APP_ID=app-7nmudrc1tudd
 ```
 

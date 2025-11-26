@@ -28,8 +28,8 @@ export function useAuth(options: UseAuthOptions = {}) {
         console.log('从本地存储加载用户信息:', storedUser)
         setUser(storedUser)
       } else if (options.guard) {
-        // 如果要求登录但未登录，跳转到登录页
-        Taro.reLaunch({url: '/pages/login/index'})
+        // 如果要求登录但未登录，跳转到登录页（分包路径）
+        Taro.reLaunch({url: '/subpackages/auth/pages/login/index'})
       }
     } catch (error) {
       console.error('加载用户信息失败:', error)
@@ -41,7 +41,7 @@ export function useAuth(options: UseAuthOptions = {}) {
   const logout = () => {
     Taro.removeStorageSync('user')
     setUser(null)
-    Taro.reLaunch({url: '/pages/login/index'})
+    Taro.reLaunch({url: '/subpackages/auth/pages/login/index'})
   }
 
   return {

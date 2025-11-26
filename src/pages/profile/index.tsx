@@ -59,7 +59,7 @@ const ProfilePage: React.FC = () => {
               )}
             </View>
             <View className="flex-1">
-              <Text className="text-2xl font-bold text-foreground block mb-1">{profile?.nickname || '坚持喵用户'}</Text>
+              <Text className="text-2xl font-bold text-foreground block mb-1">{profile?.nickname || '一刻习惯用户'}</Text>
               <View className="flex items-center space-x-2">
                 <View className="px-2 py-1 rounded-full bg-primary/10">
                   <Text className="text-xs font-semibold text-primary">Lv.{profile?.level || 1}</Text>

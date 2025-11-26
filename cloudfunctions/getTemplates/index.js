@@ -51,7 +51,8 @@ const HOT_TEMPLATE_DOCS = [
   }
 ]
 
-const getCoverImagePath = (envId, templateId) => `cloud://${envId}/temples/${templateId}.png`
+// 使用完整的 File ID 格式（包含 bucket ID）
+const getCoverImagePath = (envId, templateId) => `cloud://${envId}.636c-${envId}-1387386175/temples/${templateId}.png`
 
 async function seedHotTemplates(plansCollection, envId) {
   const templateDocs = HOT_TEMPLATE_DOCS.map((item) => ({

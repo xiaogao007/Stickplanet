@@ -1,7 +1,7 @@
 {
-  "name": "miaoda-taro-react-starter",
+  "name": "一刻习惯",
   "version": "1.0.0",
-  "description": "开箱即用的基于Taro + React + Zustand + TailwindCSS + TypeScript的模板",
+  "description": "一刻习惯是一款帮助你建立每日好习惯的轻量小程序。通过可选模板、每日勾选与统计提醒，让坚持变得更简单、更有仪式感。",
   "author": "miaoda-team",
   "license": "MIT",
   "templateInfo": {
@@ -17,7 +17,10 @@
     "build:weapp": "taro build --type weapp",
     "postinstall": "weapp-tw patch",
     "lint": "npx biome check --write --unsafe --diagnostic-level=error || true; tsgo -p tsconfig.check.json; ./scripts/checkAuth.sh; ./scripts/checkNavigation.sh",
-    "deploy:cloudfunctions": "node scripts/deploy-cloudfunctions.js"
+    "deploy:cloudfunctions": "node scripts/deploy-cloudfunctions.js",
+    "deploy:getTemplates": "node scripts/deploy-getTemplates.js",
+    "clean:dist": "node scripts/clean-dist.js",
+    "build:weapp:prod": "npm run clean:dist && npm run build:weapp && npm run clean:dist"
   },
   "browserslist": [
     "last 5 years",

@@ -68,6 +68,10 @@ export default defineConfig<'vite'>(async (merge) => {
       ] as Plugin[]
     },
     mini: {
+      // 优化主包体积
+      optimizeMainPackage: {
+        enable: true
+      },
       postcss: {
         pxtransform: {
           enable: true,
